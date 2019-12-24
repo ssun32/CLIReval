@@ -36,7 +36,7 @@ installed via `pip`.
 Set up a new virtual environment for the project using `python3`:
 
 ``` shell
-virtualenv -p $(which python3) /a/path/you/choose/elastic4clir
+virtualenv -p $(which python3) /a/path/you/choose/mt2ir
 ```
 
 #### Activate the virtualenv
@@ -47,7 +47,7 @@ Whenever you want to work with the project, activate its
 Enter the `virtualenv`:
 
 ``` shell
-source /a/path/you/choose/elastic4clir/bin/activate
+source /a/path/you/choose/mt2ir/bin/activate
 ```
 
 #### Dependencies
@@ -61,18 +61,4 @@ After activating, install the project's dependencies by running:
 
 ``` shell
 pip install -r requirements.txt
-python setup.py install
 ```
-
-#### Deactivate the virtualenv
-
-When finished with the environment:
-
-``` shell
-deactivate
-```
-
-### Elasticsearch
-
-See [this document](ELASTICSEARCH.md) for information about
-running elasticsearch.

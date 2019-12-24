@@ -9,8 +9,8 @@ rootdir=$(cd `dirname $0/`/.. && pwd)
 cd $rootdir
 
 # 1. create virtualenv
-echo "1. Creating virtualenv: elastic4clir"
-virtualenv -p $(which python3) elastic4clir
+echo "1. Creating virtualenv: mt2ir"
+virtualenv -p $(which python3) mt2ir
 source elastic4clir/bin/activate
 pip install -r requirements.txt
 python setup.py install
