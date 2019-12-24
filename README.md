@@ -1,11 +1,11 @@
-# Installing MT2IR
+# MT2IR
 
 Typically, preparing the system involves the following:
 
 1. Install the software dependencies
-1. Install elasticsearch
+1. Install elasticsearch and trec_eval
 1. Start elasticsearch
-1. Run software (experiments, etc.)
+1. Run experiments
 1. Stop elasticsearch
 
 ## Dependencies
@@ -16,7 +16,9 @@ Typically, preparing the system involves the following:
 * [jenkspy 0.1.5](https://github.com/mthh/jenkspy), a fast python implementation of jenks natural breaks algorithm
 
 
-``` Installation
+## Installation
 * Install python dependencies  `pip install -r requirements.txt`
 * Install external tools (elasticsearch and trec_eval) `bash scripts/install_external_tools.sh`
-```
+
+## Start and Stop ElasticSearch
+`./scripts/server.sh [start | stop]`
