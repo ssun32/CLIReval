@@ -22,3 +22,6 @@ Typically, preparing the system involves the following:
 
 ## Start and Stop ElasticSearch
 `./scripts/server.sh [start | stop]`
+
+## Run evaluation
+python evaluate.py sample/en-de.ref.sgm sample/en-de.mt.sgm
