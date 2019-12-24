@@ -8,57 +8,15 @@ Typically, preparing the system involves the following:
 1. Run software (experiments, etc.)
 1. Stop elasticsearch
 
-Some of these (particularly, managing an elasticsearch instance)
-may be obviated by shared instances (e.g. on CLSP network), but
-are covered here for clarity.
+## Dependencies
+* Python 3.7
+* [NumPy](http://www.numpy.org/), tested with 1.15.4
+* [Python Elastic Search Client](https://elasticsearch-py.readthedocs.io/en/master/), `pip install elasticsearch`
+* [Beautiful Soup 4](https://www.crummy.com/software/BeautifulSoup/bs4/doc/), use to parse sgml files (`pip install bs4`)
+* [jenkspy 0.1.5](https://github.com/mthh/jenkspy), a fast python implementation of jenks natural breaks algorithm
 
-## Convenience script
 
-See [here](setup/install.sh) for a script that attempts to
-both set up an environment for the software as well as
-download and install elasticsearch.
-
-## Requirements
-
-### Python
-
-The system has a collection of `python3` scripts that are used
-to interact with input data and elasticsearch.
-
-The system requires both `python3` (currently `3.5.x`) as well
-as `virtualenv`. On CLSP, these tools are already installed.
-On a personal machine, `python3` and `virtualenv` can typically be
-found in either system packages (perhaps `virtualenv3`) or can be
-installed via `pip`.
-
-#### Set up virtualenv
-
-Set up a new virtual environment for the project using `python3`:
-
-``` shell
-virtualenv -p $(which python3) /a/path/you/choose/mt2ir
-```
-
-#### Activate the virtualenv
-
-Whenever you want to work with the project, activate its
-`virtualenv`.
-
-Enter the `virtualenv`:
-
-``` shell
-source /a/path/you/choose/mt2ir/bin/activate
-```
-
-#### Dependencies
-
-Once inside the new `virtualenv`, you'll need to install the projects'
-software dependencies.
-
-This only needs to be done once per `virtualenv`.
-
-After activating, install the project's dependencies by running:
-
-``` shell
-pip install -r requirements.txt
+``` Installation
+* Install python dependencies  `pip install -r requirements.txt`
+* Install external tools (elasticsearch and trec_eval) `bash scripts/install_external_tools.sh`
 ```
