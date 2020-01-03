@@ -12,13 +12,19 @@ class DocParser():
     def __init__(self, doc_file_path):
         self.doc_file_type = self.get_file_type(doc_file_path)
 
-        if self.doc_file_type is self.SGML:
+        if self.doc_file_type == self.SGML:
             self.docs, self.dropped_docs, self.total_sents = self.parse_sgml(
                 doc_file_path)
             self.total_docs = len(self.docs)
+        else:
+            self.docs, self.dropped_docs, self.total_sents = self.parse_tsv(
+                doc_file_path)
+            self.total_docs = len(self.docs)
+
 
     def get_file_type(self, file_path):
-        file_ext = path.splitext(file_path)[-1]
+        file_ext = path.splitext(file_path)[-1][1:]
+        print(file_ext)
         if file_ext.lower() in ['sgm', 'sgml']:
             return self.SGML
         elif file_ext.lower() in ['tsv']:
@@ -46,6 +52,24 @@ class DocParser():
 
                 if doc_text:
                     docs.append((doc_id, doc_text))
+        return docs, dropped_docs, total_sents
+
+    @staticmethod
+    def parse_tsv(tsv_file):
+        dropped_docs = 0
+        total_sents = 0
+        docs = []
+        tmp_docs = defaultdict(list)
+        for l in open(tsv_file):
+            try:
+                doc_id, doc_sent = l.split('\t')
+                tmp_docs[doc_id].append(doc_sent)
+                total_sents += 1
+            except:
+                raise Exception("Unable to read tsv file")
+
+        for doc_id, doc_text in tmp_docs.items():
+            docs.append((doc_id, doc_text))
         return docs, dropped_docs, total_sents
 
     def get_docs(self):
