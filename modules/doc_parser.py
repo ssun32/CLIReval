@@ -1,9 +1,12 @@
+import logging
 from os import path
+from collections import defaultdict
 from bs4 import BeautifulSoup as bs
 
-class doc_parser(object):
 
-    #constants
+class DocParser():
+
+    # constants
     SGML = 'sgml'
     TSV = 'tsv'
 
@@ -11,7 +14,9 @@ class doc_parser(object):
         self.doc_file_type = self.get_file_type(doc_file_path)
 
         if self.doc_file_type is self.SGML:
-            self.docs = self.parse_sgml(doc_file_path)
+            self.docs, self.dropped_docs, self.total_sents = self.parse_sgml(
+                doc_file_path)
+            self.total_docs = len(self.docs)
 
     def get_file_type(self, file_path):
         file_ext = path.splitext(file_path)[-1]
@@ -22,20 +27,37 @@ class doc_parser(object):
         else:
             return self.SGML
 
-
-    def parse_sgml(self, sgml_file):
+    @staticmethod
+    def parse_sgml(sgml_file):
+        dropped_docs = 0
+        total_sents = 0
         docs = []
-        with open(sgml_file) as f:
-            soup = bs(f.read(), 'html.parser')
-            for doc_id, doc in enumerate(soup.find_all('doc')):
+        with open(sgml_file) as input_f:
+            soup = bs(input_f.read(), 'html.parser')
+            for doc in soup.find_all('doc'):
+                doc_id = doc.get('docid')
                 doc_text = []
                 for sentence in doc.find_all('seg'):
+                    # if no reference is available, stop reading
+                    if sentence.get_text() == "NO REFERENCE AVAILABLE":
+                        dropped_docs += 1
+                        break
+                    total_sents += 1
                     doc_text.append(sentence.get_text())
-                docs.append((doc_id, doc_text))
-        return docs
+
+                if doc_text:
+                    docs.append((doc_id, doc_text))
+        return docs, dropped_docs, total_sents
 
     def get_docs(self):
         return self.docs
+
+    def log_doc_stats(self):
+        logging.info(
+            "Total Document(s): %d, Total Sentence(s): %d, Dropped document(s): %d",
+            self.total_docs,
+            self.total_sents,
+            self.dropped_docs)
 
     def get_queries(self):
         queries = []
@@ -44,15 +66,3 @@ class doc_parser(object):
                 query_id = "%s_%i" % (doc_id, i)
                 queries.append((query_id, query))
         return queries
-
-    def get_vocab_query_iterable(self):
-        df = defaultdict(dict)
-        for doc_id, doc_text in self.docs:
-            for i, sent in enumerate(doc_text):
-                for tok in sent.split():
-                    df[tok][doc_id] = 1
-
-        q = []
-        for i, k in enumerate(sorted(df.keys(), key=lambda x: len(df[x].keys()), reverse=True)[:1000]):
-            q.append(("query_%s" % i, k))
-        return q
