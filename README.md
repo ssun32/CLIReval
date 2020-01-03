@@ -16,7 +16,7 @@ Typically, preparing the system involves the following:
 * [jenkspy 0.1.5](https://github.com/mthh/jenkspy), a fast python implementation of jenks natural breaks algorithm
 
 ## Usage
-```python
+```
 usage: evaluate.py [-h] [--port PORT] [--query_mode {sentences,unique_terms}]
                    [--relv_mode {jenks,percentile,query_in_document}]
                    [--jenks_nb_class JENKS_NB_CLASS]
