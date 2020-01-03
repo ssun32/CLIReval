@@ -16,10 +16,22 @@ Typically, preparing the system involves the following:
 * [jenkspy 0.1.5](https://github.com/mthh/jenkspy), a fast python implementation of jenks natural breaks algorithm
 
 ## Usage
+```usage: evaluate.py [-h] [--port PORT] [--query_mode {sentences,unique_terms}]
+                   [--relv_mode {jenks,percentile,query_in_document}]
+                   [--jenks_nb_class JENKS_NB_CLASS]
+                   [--n_percentile N_PERCENTILE] [--n_ret N_RET]
+                   [--qrel_save_path QREL_SAVE_PATH]
+                   [--res_save_path RES_SAVE_PATH]
+                   [--output_format {tsv,json}]
+                   [--analyzer {arabic,armenian,basque,bengali,brazilian,bulgarian,catalan,cjk,czech,danish,dutch,english,finnish,french,galician,german,greek,hindi,hungarian,indonesian,irish,italian,latvian,lithuanian,norwegian,persian,portuguese,romanian,russian,sorani,spanish,swedish,turkish,thai}]
+                   [--output_file OUTPUT_FILE]
+                   ref mt````
+                   
+
 | Option|Default| Description|
-| ------------- |:-------------:| -----:|
-| ref      |  | reference file |
-| mt      |     |   translation file |
+| :-------------: |:-------------:| :-----:|
+| ref|  | reference file |
+| mt |  | translation file |
 | --port | 9200|elasticsearch port (default: 9200)'|
 
 ## Installation
