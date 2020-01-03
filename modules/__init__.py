@@ -1,2 +1,3 @@
-from .doc_parser import doc_parser
-from .search import search
+from .doc_parser import DocParser
+from .search import Search
+from .trec_eval import TrecEval
