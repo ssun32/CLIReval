@@ -25,7 +25,7 @@ Typically, preparing the system involves the following:
                    [--output_format {tsv,json}]
                    [--analyzer {arabic,armenian,basque,bengali,brazilian,bulgarian,catalan,cjk,czech,danish,dutch,english,finnish,french,galician,german,greek,hindi,hungarian,indonesian,irish,italian,latvian,lithuanian,norwegian,persian,portuguese,romanian,russian,sorani,spanish,swedish,turkish,thai}]
                    [--output_file OUTPUT_FILE]
-                   ref mt````
+                   ref mt```
                    
 
 | Option|Default| Description|
