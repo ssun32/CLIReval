@@ -3,7 +3,6 @@ from os import path
 from collections import defaultdict
 from bs4 import BeautifulSoup as bs
 
-
 class DocParser():
 
     # constants
