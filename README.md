@@ -16,11 +16,11 @@ Typically, preparing the system involves the following:
 * [jenkspy 0.1.5](https://github.com/mthh/jenkspy), a fast python implementation of jenks natural breaks algorithm
 
 ## Usage
-| Tables        | Are           | Cool  |
+| Option|Default| Description|
 | ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
+| ref      |  | reference file |
+| mt      |     |   translation file |
+| --port | 9200|elasticsearch port (default: 9200)'|
 
 ## Installation
 * Install python dependencies  `pip install -r requirements.txt`
