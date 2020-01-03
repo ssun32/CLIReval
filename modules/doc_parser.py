@@ -1,7 +1,7 @@
 from os import path
 from bs4 import BeautifulSoup as bs
 
-class doc_parser(object):
+class DocParser():
 
     #constants
     SGML = 'sgml'
@@ -44,15 +44,3 @@ class doc_parser(object):
                 query_id = "%s_%i" % (doc_id, i)
                 queries.append((query_id, query))
         return queries
-
-    def get_vocab_query_iterable(self):
-        df = defaultdict(dict)
-        for doc_id, doc_text in self.docs:
-            for i, sent in enumerate(doc_text):
-                for tok in sent.split():
-                    df[tok][doc_id] = 1
-
-        q = []
-        for i, k in enumerate(sorted(df.keys(), key=lambda x: len(df[x].keys()), reverse=True)[:1000]):
-            q.append(("query_%s" % i, k))
-        return q
