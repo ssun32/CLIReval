@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-import sys
+# -*- coding: utf-8 -*-
+"""
+CLIREVAL
+"""
+from typing import List, Tuple
 import json
 import logging
 import tempfile
@@ -7,7 +10,7 @@ import numpy as np
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
 from tqdm import tqdm
-from .relv_utils import normalize_bm25_scores, RelvConvertor
+from .relv_convertor import RelvConvertor
 
 
 # hide elasticsearch logger messages
@@ -15,15 +18,38 @@ logging.getLogger('elasticsearch').setLevel(50)
 
 
 class Search():
+    """ Contains methods to index and search a ElasticSearch server"""
+
     # a default index name used for all elasticsearch operations
-    INDEX = 'mt2ir'
+    INDEX = 'clireval'
 
     def __init__(
             self,
-            ref_iterable,
-            mt_iterable,
-            query_iterable,
+            ref_iterable: List[Tuple[str, str]],
+            mt_iterable: List[Tuple[str, str]],
+            query_iterable: List[Tuple[str, str]],
             **kwargs):
+        """ Constructor of Search object
+
+        This __init__ does the following:
+            1) Index the documents in ref_iterable.
+            2) If query_mode = unique_terms, then get vocabularies from ElasticSearch
+            term vector
+            3) Execute queries in query_iterable
+            4) Convert search results to relevance labels
+            5) Write results to a tmp qrel file
+            6) Index the documents in mt_iterable
+            7) Execulte queries in query_iterable
+            8) Write results to a tmp res file
+
+        Args:
+            ref_iterable (list(tuple(str, str))): List of reference doc tuples -> (doc id, doc text)
+            mt_iterable (list(tuple(str, str))): List of translated doc tuples -> (doc id, doc text)
+            query_iterable (list(tuple(str, str))): List of query tuples -> (query id, query text)
+            **port (int): ElasticSearch server port
+            **analyzer (str): ElasticSearch analyzer
+            **n_ret (int): Maximum number of documents to return per query
+        """
 
         self.es = Elasticsearch(port=kwargs['port'], timeout=500)
         self.analyzer = kwargs['analyzer']
@@ -50,7 +76,8 @@ class Search():
                     query_iterable = self.get_terms(ref_iterable)
                 ref_search_results = self.search(query_iterable)
             elif relv_mode == "query_in_document" and query_mode == "unique_terms":
-                raise Exception("query_mode: unique_term is not supported when relv_mode = query_in_document")
+                raise Exception(
+                    "query_mode: unique_term is not supported when relv_mode = query_in_document")
             else:
                 ref_search_results = None
 
@@ -76,12 +103,31 @@ class Search():
             self.create_res_file(mt_search_results, tmp_res_f)
 
     def get_qrel_and_res_files(self):
+        """get qrel and res file objects
+
+        returns:
+            (file-like object): temp qrel file
+            (file-like object): temp res file
+        """
         return self.tmp_qrel_f, self.tmp_res_f
 
-    def get_terms(self, doc_iterable):
+    def get_terms(
+            self, doc_iterable: List[Tuple[str, str]]) -> List[Tuple[int, str]]:
+        """ get unique terms across all documents
+
+        args:
+            doc_iterable (list(tuple(str, str))): List of doc tuples -> (doc id, doc text)
+        """
         terms = {}
         doc_ids = [doc_id for doc_id, _ in doc_iterable]
-        tfs = self.es.mtermvectors(index='mt2ir', doc_type = "doc", ids = doc_ids, fields="doc_text", field_statistics=False, term_statistics=False)
+        tfs = self.es.mtermvectors(
+            index='mt2ir',
+            doc_type="doc",
+            ids=doc_ids,
+            fields="doc_text",
+            field_statistics=False,
+            term_statistics=False)
+
         for doc in tfs['docs']:
             for term in doc['term_vectors']['doc_text']['terms']:
                 terms[term] = 1
@@ -89,13 +135,23 @@ class Search():
 
         return list(zip(range(len(terms)), terms))
 
+    @staticmethod
     def create_qrel_file(
-            self,
-            query_iterable,
-            doc_iterable,
-            search_results,
+            query_iterable: List[Tuple[str, str]],
+            doc_iterable: List[Tuple[str, str]],
+            search_results: List[Tuple[str, str, float]],
             tmp_f,
             **kwargs):
+        """Create trec_eval qrel file
+
+        Args:
+            query_iterable (list(tuple(str, str))): List of query tuples -> (query id, query text)
+            doc_iterable (list(tuple(str, str))): List of doc tuples -> (doc id, doc text)
+            search_results (list(tuple(str, str, float))): List of result tuples
+            -> (query id, doc id, score)
+            tmp_f (file-like object): A file-like object to temporary file
+        """
+
         if kwargs["relv_mode"] == "query_in_document":
             for query_id, query in tqdm(query_iterable):
                 for doc_id, doc in doc_iterable:
@@ -107,8 +163,8 @@ class Search():
                         (query_id, doc_id, relv), file=tmp_f)
 
         else:
-            # normalize bm25 scores
-            search_results_d = normalize_bm25_scores(search_results)
+            search_results_d = {(str(query_id), str(doc_id)): score
+                                for query_id, doc_id, score in search_results}
             doc_ids = [doc_id for doc_id, _ in doc_iterable]
 
             for query_id, _ in tqdm(query_iterable):
@@ -117,21 +173,26 @@ class Search():
                 scores = np.array([search_results_d.get(
                     (query_id, str(doc_id)), 0.0) for doc_id in doc_ids])
                 relv_convertor = RelvConvertor(scores, **kwargs)
+                relv_labels = relv_convertor.get_relevance_labels()
 
-                for doc_id in doc_ids:
-                    # convert document bm25 score to a relevance judgment
-                    doc_score = search_results_d.get((query_id, doc_id), 0.0)
-                    relv = relv_convertor.get_relevance(doc_score)
-
+                for relv, doc_id in zip(relv_labels, doc_ids):
                     # output to qrel file
                     print(
                         "%s\t0\t%s\t%s" %
                         (query_id, doc_id, relv), file=tmp_f)
 
-    def create_res_file(self, results, tmp_f):
+    @staticmethod
+    def create_res_file(results: List[Tuple[str, str, float]], tmp_f):
+        """Creates trec_eval results file
+
+        Args:
+            results (list(tuple(str, str, float))): List of result tuples
+            -> (query id, doc id, bm25 scores)
+            tmp_f (file-like object): A file-like object to temporary file
+        """
         current_qid = ''
         rank = 0
-        for query_id, doc_id, score, _ in results:
+        for query_id, doc_id, score in results:
             if query_id != current_qid:
                 rank = 0
             print(
@@ -139,7 +200,12 @@ class Search():
                 (query_id, doc_id, rank, score), file=tmp_f)
             rank += 1
 
-    def recreate_index(self, analyzer):
+    def recreate_index(self, analyzer: str):
+        """ deletes previous index and create a new index
+
+        args:
+            analzyer (str): ElasticSearch Analyzer
+        """
         index_settings = '''{
         "settings" : {
             "index" : {
@@ -169,11 +235,20 @@ class Search():
         # put index mapping
         self.es.indices.put_mapping(
             index=self.INDEX, doc_type='doc', body=mapping)
-        return self.es
 
     # add all documents in doc_iterables to elasticsearch index
 
-    def bulk_index(self, doc_iterable):
+    def bulk_index(self, doc_iterable: List[Tuple[str, str]]) -> int:
+        """ bulk index documents into ElasticSearch Server
+
+        args:
+            doc_iterable (list(tuple(str, str))): List of document tuples -> (doc id, doc text)
+
+        returns:
+            (int): Number of successful index operations
+        """
+
+        # helper function to create bulk json string
         def make_bulk_json(doc_iterable):
             json_l = []
             for doc_id, doc_text in doc_iterable:
@@ -191,7 +266,7 @@ class Search():
             return json_l
 
         # tuple of number-successes (int) and a list of errors
-        # to do handle errors here
+        # to do: handle errors
         errors = helpers.bulk(
             self.es,
             make_bulk_json(doc_iterable),
@@ -199,7 +274,16 @@ class Search():
             request_timeout=60)
         return errors[0]
 
-    def search(self, query_iterable):
+    def search(
+            self, query_iterable: List[Tuple[str, str]]) -> List[Tuple[str, str, float]]:
+        """ Execute queries in query_iterable and return results
+
+        Args:
+            query_iterable (list(tuple(str, str))): List of query tuples -> (query id, query text)
+
+        Returns:
+            list(tuple(str, str, float)): list of result tuples -> (query id, doc id, bm25 score)
+        """
         no_hit_count = 0
         logging.info(
             "Getting search results from ElasticSearch (%i queries)...",
@@ -223,15 +307,23 @@ class Search():
             if len(response['hits']['hits']) == 0:
                 no_hit_count += 1
             for hit in response['hits']['hits']:
-                search_results.append(
-                    (query_id, hit['_id'], hit['_score'], response['hits']['max_score']))
+                search_results.append((query_id, hit['_id'], hit['_score']))
 
         if no_hit_count:
             logging.warning("%d queries have 0 search hit", no_hit_count)
 
         return search_results
 
-    def index(self, doc_iterable):
+    def index(self, doc_iterable: List[Tuple[str, str]]):
+        """ bulk index documents in doc_iterable
+
+        Raises:
+            Exception: If number of successfully indexed documents != number of documents
+            in doc_iterable
+
+        Args:
+            doc_iterable (list(tuple(str, str))): A list of tuples -> (doc id, doc text)
+        """
         logging.info("Bulk indexing %i documents...", len(doc_iterable))
         self.recreate_index(self.analyzer)
         success_counts = self.bulk_index(doc_iterable)
@@ -239,9 +331,20 @@ class Search():
         # raise exception if index operation fails"
         if success_counts != len(doc_iterable):
             raise (
-                "Number of documents in ElasticSearch Index(%s) != Number of documents provided (%s)" %
+                """Number of documents in ElasticSearch Index(%s)
+                != Number of documents provided (%s)""" %
                 (success_counts, len(doc_iterable)))
 
-    def index_and_search(self, query_iterable, doc_iterable):
+    def index_and_search(
+            self, query_iterable: List[Tuple[str, str]],
+            doc_iterable: List[Tuple[str, str]]) -> List[Tuple[str, str, float]]:
+        """ index with documents in doc_iterable and search with queries in query_iterable
+
+        Args:
+            query_iterable (list(tuple(str, str))): List of query tuples -> (query id, query text)
+
+        Returns:
+            (list(tuple(str, str, float))): returns results from self.search
+        """
         self.index(doc_iterable)
         return self.search(query_iterable)
