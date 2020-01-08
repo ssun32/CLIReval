@@ -69,7 +69,7 @@ class RelvConvertor():
 
             # A hack which ensures that the first interval starts from 0.0
             np.append(self.scores, [0.0])
-            self.intervals = self.jenks_intervals(scores, jenks_nb_class)
+            self.intervals = self.get_jenks_intervals(self.scores, jenks_nb_class)
 
         elif relv_mode == "percentile":
             n_percentile = kwargs.get('n_percentile', self.n_percentile)
@@ -79,7 +79,7 @@ class RelvConvertor():
             if n_percentile > 100 or n_percentile < 0:
                 raise ValueError("n_percentile must be between 0 - 100.")
 
-            self.intervals = self.percentile_intervals(
+            self.intervals = self.get_percentile_intervals(
                 self.scores, kwargs['n_percentile'])
         else:
             raise Exception("Mode: %s not supported")
@@ -108,7 +108,7 @@ class RelvConvertor():
         return [score / max_score for score in scores]
 
     @staticmethod
-    def jenks_intervals(scores: List[float], nb_class: int) -> Tuple[float]:
+    def get_jenks_intervals(scores: List[float], nb_class: int) -> Tuple[float]:
         """A wrapper static method which uses jenkspy (https://github.com/mthh/jenkspy)
         to get natural breaks
 
@@ -116,14 +116,23 @@ class RelvConvertor():
             scores (list(float)): A list which contains search scores of retrieved documents.
             **nb_class (int): Number of intervals
 
+        Raises:
+            TypeError: If score is not float.
+            ValueError: If score is not between 0.0 and 1.0
+
         Returns:
             tuple(float): break values
         """
+        for score in scores:
+            if not isinstance(score, float):
+                raise TypeError("Score must be a float.")
+            if score < 0.0 or score > 1.0:
+                raise ValueError("Scores must be between 0.0 and 1.0.")
 
         return jenkspy.jenks_breaks(scores, nb_class)
 
     @staticmethod
-    def percentile_intervals(
+    def get_percentile_intervals(
             scores: List[float],
             n_percentile: int) -> Tuple[float]:
         """A static method which returns break values using the percentile method.

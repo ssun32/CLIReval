@@ -33,11 +33,15 @@ class DocParser():
         """
         self.doc_file_type = self.get_file_type(doc_file_path)
 
-        if self.doc_file_type == self.SGML:
-            self.docs, self.total_sents = self.parse_sgml(doc_file_path)
-        else:
-            self.docs, self.total_sents = self.parse_tsv(doc_file_path)
-        self.total_docs = len(self.docs)
+        try:
+            if self.doc_file_type == self.SGML:
+                self.docs, self.total_sents = self.parse_sgml(doc_file_path)
+            else:
+                self.docs, self.total_sents = self.parse_tsv(doc_file_path)
+            self.total_docs = len(self.docs)
+        except:
+            raise Exception("Failed to parse file.")
+
 
     def get_file_type(self, file_path: str) -> str:
         """A method used to determine type of input file
@@ -105,13 +109,14 @@ class DocParser():
         total_sents = 0
         docs = []
         tmp_docs = defaultdict(list)
-        for line in open(tsv_file):
-            try:
-                doc_id, doc_sent = line.split('\t')
-                tmp_docs[doc_id].append(doc_sent)
-                total_sents += 1
-            except BaseException:
-                raise Exception("Unable to read tsv file")
+        with open(tsv_file) as tsv_f:
+            for line in tsv_f:
+                try:
+                    doc_id, doc_sent = line.split('\t')
+                    tmp_docs[doc_id].append(doc_sent.strip())
+                    total_sents += 1
+                except BaseException:
+                    raise Exception("Unable to read tsv file")
 
         for doc_id, doc_text in tmp_docs.items():
             docs.append((doc_id, doc_text))
