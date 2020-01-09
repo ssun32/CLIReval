@@ -50,19 +50,19 @@ class Search():
             **analyzer (str): ElasticSearch analyzer
             **n_ret (int): Maximum number of documents to return per query
         """
-
-        self.es = Elasticsearch(port=kwargs['port'], timeout=500)
-        self.analyzer = kwargs['analyzer']
-        self.n_ret = kwargs['n_ret']
+        port = kwargs.get('port', 9200)
+        self.es = Elasticsearch(port=port, timeout=500)
+        self.analyzer = kwargs.get('analyzer', 'standard')
+        self.n_ret = kwargs.get('n_ret', 0)
 
         with tempfile.NamedTemporaryFile(mode='w', delete=False) as tmp_qrel_f, \
                 tempfile.NamedTemporaryFile(mode='w', delete=False) as tmp_res_f:
-            self.tmp_qrel_f = tmp_qrel_f
-            self.tmp_res_f = tmp_res_f
+            self.tmp_qrel_f = tmp_qrel_f.name
+            self.tmp_res_f = tmp_res_f.name
 
             # query_mode and relv_mode
-            query_mode = kwargs['query_mode'].lower()
-            relv_mode = kwargs['relv_mode'].lower()
+            query_mode = kwargs.get("query_mode", "sentences").lower()
+            relv_mode = kwargs.get("relv_mode", "jenks").lower()
 
             logging.info(
                 "Step 1: generating qrels file using reference translations (mode: %s)",
@@ -121,7 +121,7 @@ class Search():
         terms = {}
         doc_ids = [doc_id for doc_id, _ in doc_iterable]
         tfs = self.es.mtermvectors(
-            index='mt2ir',
+            index=self.INDEX,
             doc_type="doc",
             ids=doc_ids,
             fields="doc_text",
@@ -152,10 +152,10 @@ class Search():
             tmp_f (file-like object): A file-like object to temporary file
         """
 
-        if kwargs["relv_mode"] == "query_in_document":
+        relv_mode = kwargs.get("relv_mode", "jenks")
+        if relv_mode == "query_in_document":
             for query_id, query in tqdm(query_iterable):
                 for doc_id, doc in doc_iterable:
-                    print(query)
                     relv = 1 if query in doc else 0
                     # output to qrel file
                     print(
@@ -330,7 +330,7 @@ class Search():
 
         # raise exception if index operation fails"
         if success_counts != len(doc_iterable):
-            raise (
+            raise Exception(
                 """Number of documents in ElasticSearch Index(%s)
                 != Number of documents provided (%s)""" %
                 (success_counts, len(doc_iterable)))

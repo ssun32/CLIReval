@@ -80,7 +80,7 @@ class RelvConvertor():
                 raise ValueError("n_percentile must be between 0 - 100.")
 
             self.intervals = self.get_percentile_intervals(
-                self.scores, kwargs['n_percentile'])
+                self.scores, n_percentile)
         else:
             raise Exception("Mode: %s not supported")
 
