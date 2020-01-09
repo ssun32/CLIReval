@@ -167,13 +167,20 @@ class Search():
                                 for query_id, doc_id, score in search_results}
             doc_ids = [doc_id for doc_id, _ in doc_iterable]
 
-            for query_id, _ in tqdm(query_iterable):
+            for query_id, query in tqdm(query_iterable):
                 query_id = str(query_id)
 
                 scores = np.array([search_results_d.get(
                     (query_id, str(doc_id)), 0.0) for doc_id in doc_ids])
-                relv_convertor = RelvConvertor(scores, **kwargs)
-                relv_labels = relv_convertor.get_relevance_labels()
+
+                try:
+                    relv_convertor = RelvConvertor(scores, **kwargs)
+                    relv_labels = relv_convertor.get_relevance_labels()
+                except:
+                    print(query_id, query)
+                    print(scores)
+                    import sys
+                    sys.exit(0)
 
                 for relv, doc_id in zip(relv_labels, doc_ids):
                     # output to qrel file

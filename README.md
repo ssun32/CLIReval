@@ -1,5 +1,6 @@
-# MT2IR (TO-DO)
+# CLIREVAL
 
+(TO-DO)
 Typically, preparing the system involves the following:
 
 1. Install the software dependencies

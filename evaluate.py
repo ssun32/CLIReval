@@ -35,7 +35,7 @@ if __name__ == '__main__':
         help='Number of classes for Jenks natural breaks optimization. Used only when relv_mode = jenks.')
     cmdline_parser.add_argument(
         '--n_percentile',
-        type=float,
+        type=int,
         default=25,
         help='Set relevance judgments of documents with BM25 scores in the top n percentile to 1, else 0. Used only when relv_mode = percentile.')
     cmdline_parser.add_argument(
@@ -87,8 +87,8 @@ if __name__ == '__main__':
         query_iterable,
         **vars(args))
     tmp_qrel_f, tmp_res_f = es.get_qrel_and_res_files()
-    qrel_f = tmp_qrel_f.name
-    res_f = tmp_res_f.name
+    qrel_f = tmp_qrel_f
+    res_f = tmp_res_f
 
     if args.qrel_save_path is not None:
         shutil.move(qrel_f, args.qrel_save_path)

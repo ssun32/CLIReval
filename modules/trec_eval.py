@@ -11,7 +11,8 @@ import logging
 
 class TrecEval():
     """ A wrapper class for trec_eval"""
-    trec_eval_bin = "./external_tools/trec_eval/trec_eval"
+    script_path = os.path.dirname(os.path.abspath(__file__))
+    trec_eval_bin = os.path.join(script_path, "../external_tools/trec_eval/trec_eval")
 
     def __init__(self, qrel_f: str, res_f: str):
         """ Constructor which takes a qrel file and a results file

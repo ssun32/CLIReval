@@ -68,7 +68,7 @@ class RelvConvertor():
                 raise ValueError("Number of classes must be at least 2.")
 
             # A hack which ensures that the first interval starts from 0.0
-            np.append(self.scores, [0.0])
+            np.append(self.scores, [0.0, 1.0])
             self.intervals = self.get_jenks_intervals(self.scores, jenks_nb_class)
 
         elif relv_mode == "percentile":
@@ -105,7 +105,7 @@ class RelvConvertor():
             if score > max_score:
                 max_score = score
         max_score = max(scores)
-        return [score / max_score for score in scores]
+        return [score if score == 0 else score/max_score for score in scores]
 
     @staticmethod
     def get_jenks_intervals(scores: List[float], nb_class: int) -> Tuple[float]:
