@@ -21,7 +21,7 @@ Typically, preparing the system involves the following:
 usage: evaluate.py [-h] [--port PORT] [--query_mode {sentences,unique_terms}]
                    [--relv_mode {jenks,percentile,query_in_document}]
                    [--jenks_nb_class JENKS_NB_CLASS]
-                   [--n_percentile N_PERCENTILE] [--n_ret N_RET]
+                     [--n_percentile N_PERCENTILE] [--n_ret N_RET]
                    [--qrel_save_path QREL_SAVE_PATH]
                    [--res_save_path RES_SAVE_PATH]
                    [--output_format {tsv,json}]
@@ -34,14 +34,23 @@ usage: evaluate.py [-h] [--port PORT] [--query_mode {sentences,unique_terms}]
 | :-------------: |:-------------:| :-----:|
 | ref|  | reference file |
 | mt |  | translation file |
-| --port | 9200|elasticsearch port (default: 9200)'|
+| --port | 9200|elasticsearch port (default: 9200)|
+
+
+### Start and Stop ElasticSearch
+`./scripts/server.sh [start | stop]`
+
+### Run evaluation
+python evaluate.py example/en-de.ref.sgm example/en-de.mt.sgm
+
+We provide a sample bash script for the pipeline in `example/evaluate.sh` and sample output in 
+`example/output.txt`. 
+
+Please refer to [trec_eval
+documentation](https://w-nlpir.nist.gov/projects/trecvid/trecvid.tools/trec_eval_video/A.README) for an explanation of the output.
 
 ## Installation
 * Install python dependencies  `pip install -r requirements.txt`
 * Install external tools (elasticsearch and trec_eval) `bash scripts/install_external_tools.sh`
 
-## Start and Stop ElasticSearch
-`./scripts/server.sh [start | stop]`
 
-## Run evaluation
-python evaluate.py sample/en-de.ref.sgm sample/en-de.mt.sgm
