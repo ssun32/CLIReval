@@ -11,6 +11,7 @@ from elasticsearch import Elasticsearch
 from elasticsearch import helpers
 from tqdm import tqdm
 from .relv_convertor import RelvConvertor
+from .utils import get_analyzer
 
 
 # hide elasticsearch logger messages
@@ -52,7 +53,7 @@ class Search():
         """
         port = kwargs.get('port', 9200)
         self.es = Elasticsearch(port=port, timeout=500)
-        self.analyzer = kwargs.get('analyzer', 'standard')
+        self.analyzer = get_analyzer(kwargs.get('target_langcode', None))
         self.n_ret = kwargs.get('n_ret', 0)
 
         with tempfile.NamedTemporaryFile(mode='w', delete=False) as tmp_qrel_f, \
@@ -65,8 +66,8 @@ class Search():
             relv_mode = kwargs.get("relv_mode", "jenks").lower()
 
             logging.info(
-                "Step 1: generating qrels file using reference translations (mode: %s)",
-                relv_mode)
+                    "Step 1: generating qrels file using reference translations (mode: %s, analyzer: %s)",
+                relv_mode, self.analyzer)
 
             # if mode is not query_in_document then get search results from
             # ElasticSearch
@@ -93,7 +94,8 @@ class Search():
                 **kwargs)
 
             logging.info(
-                "Step 2: generating results file using translated documents")
+                    "Step 2: generating results file using translated documents (analyzer: %s)",
+                self.analyzer)
             # Step 2, generate result file with machine translated documents
             mt_search_results = self.index_and_search(
                 query_iterable, mt_iterable)

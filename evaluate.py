@@ -53,11 +53,8 @@ if __name__ == '__main__':
                                 default='json',
                                 choices=['tsv', 'json'],
                                 help='output format of IR metrics')
-    cmdline_parser.add_argument('--analyzer', type=str,
-                                default='standard',
-                                choices = ["arabic", "armenian", "basque", "bengali", "brazilian", "bulgarian", "catalan", "cjk", "czech", "danish", "dutch", "english", "finnish", "french", "galician", "german", "greek", "hindi", "hungarian", "indonesian", "irish", "italian", "latvian", "lithuanian", "norwegian", "persian", "portuguese", "romanian", "russian", "sorani", "spanish", "swedish", "turkish", "thai"],
-                                help='analyzer used in ElasticSearch')
-
+    cmdline_parser.add_argument('--target_langcode', type=str,
+                                default='en')
 
     cmdline_parser.add_argument(
         '--output_file',
