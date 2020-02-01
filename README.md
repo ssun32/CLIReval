@@ -1,13 +1,8 @@
-# CLIREVAL
 
-(TO-DO)
-Typically, preparing the system involves the following:
+# CLIReval
 
-1. Install the software dependencies
-1. Install elasticsearch and trec_eval
-1. Start elasticsearch
-1. Run experiments
-1. Stop elasticsearch
+
+CLIReval is an open-source toolkit that evaluates the quality of MT outputs in the context of a CLIR system, without the need for any actual CLIR dataset. The only inputs required to the tool are the translations and the references. The tool will create a synthetic CLIR dataset, index the translations as documents, and report metrics such as mean average precision.
 
 ## Dependencies
 * Python 3.7
@@ -46,11 +41,8 @@ python evaluate.py example/en-de.ref.sgm example/en-de.mt.sgm
 We provide a sample bash script for the pipeline in `example/evaluate.sh` and sample output in 
 `example/output.txt`. 
 
-Please refer to [trec_eval
-documentation](https://w-nlpir.nist.gov/projects/trecvid/trecvid.tools/trec_eval_video/A.README) for an explanation of the output.
+Please refer to [trec_eval documentation](https://w-nlpir.nist.gov/projects/trecvid/trecvid.tools/trec_eval_video/A.README) for an explanation of the output.
 
 ## Installation
 * Install python dependencies  `pip install -r requirements.txt`
 * Install external tools (elasticsearch and trec_eval) `bash scripts/install_external_tools.sh`
-
-
