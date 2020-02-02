@@ -28,8 +28,8 @@ usage: evaluate.py [-h]
                    ref mt
 ```             
 
-|Option|Default|Description|
-|:--|:-------------:|:-----|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|Default|Description|
+|:--:|:-------------:|:-----|
 | ref|  | A file containing reference sentences/documents. |
 | mt |  | A file containing translated sentences/documents. |
 | \-\-port | 9200 |The Elasticsearch port number of a running Elasticsearch instance.|
