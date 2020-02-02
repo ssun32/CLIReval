@@ -13,30 +13,42 @@ CLIReval is an open-source toolkit that evaluates the quality of MT outputs in t
 
 ## Usage
 ```
-usage: evaluate.py [-h] [--port PORT] [--query_mode {sentences,unique_terms}]
+usage: evaluate.py [-h] 
+				   [--port PORT] 
+				   [--query_mode {sentences,unique_terms}]
                    [--relv_mode {jenks,percentile,query_in_document}]
                    [--jenks_nb_class JENKS_NB_CLASS]
-                     [--n_percentile N_PERCENTILE] [--n_ret N_RET]
+                   [--n_percentile N_PERCENTILE] 
+                   [--n_ret N_RET]
                    [--qrel_save_path QREL_SAVE_PATH]
                    [--res_save_path RES_SAVE_PATH]
+                   [--target_langcode]
                    [--output_format {tsv,json}]
-                    [--target_langcode {language code}]
                    [--output_file OUTPUT_FILE]
                    ref mt
 ```             
 
-| Option|Default| Description|
-| :-------------: |:-------------:| :-----:|
-| ref|  | reference file |
-| mt |  | translation file |
-| --port | 9200|elasticsearch port (default: 9200)|
-
-
-### Start and Stop ElasticSearch
+|Option|Default|Description|
+|:--|:-------------:|:-----|
+| ref|  | A file containing reference sentences/documents. |
+| mt |  | A file containing translated sentences/documents. |
+| \-\-port | 9200 |The Elasticsearch port number of a running Elasticsearch instance.|
+| \-\-query_mode | sentences | {sentences,unique_terms}|
+| \-\-relv_mode | jenks | {jenks,percentile,query_in_document}|
+| \-\-jenks_nb_class | 5 |Number of classes when using `jenks` mode for relevance label converter. |
+| \-\-n_percentile | 25 |The threshold percentile when using `percentile` mode for relevance label convertor. Only documents with BM25 scores in the top n_percentile are considered relevant documents. |
+| \-\-n_ret | 100 | Maximum number of documents to be returned by Elasticsearch. |
+| \-\-qrel_save_path | None | When specified, CLIReval will save trec_eval's query relevance judgments (qrel) file to `qrel_save_path`.  |
+| \-\-res_save_path | None | When specified, CLIReval will save trec_eval's results (res) file to `res_save_path`.|
+| \-\-target_langcode| en | Language code of the target sentences/documents. CLIReval has built-in analyzers for the following language codes: ar, bg, bn, ca, cs, da, de, el, en, es, eu, fa, fi, fr, ga, gl, hi, hu, hy, id, it, ja, ko, lt, lv, nl, no, pl, pt, ro, ru, sv, th, tr, uk, zh. It will use `standard` analyzer for language codes not in the list.|
+| \-\-output_format | json | json or csv.|
+| \-\-output_file | None | By default, CLIReval writes output to STDOUT. If \-\-output_file is specified, CLIReval will output to file instead. |
+### Starting and stopping Elasticsearch
+We provide a convenient script that starts an Elasticsearch instance on port 9200 and set Java heap size to 5GB:
 `./scripts/server.sh [start | stop]`
 
 ### Run evaluation
-python evaluate.py example/en-de.ref.sgm example/en-de.mt.sgm --target_langcode de --port 9200
+python evaluate.py example/en-de.ref.sgm example/en-de.mt.sgm
 
 We provide a sample bash script for the pipeline in `example/evaluate.sh` and sample output in 
 `example/output.txt`. 
