@@ -20,7 +20,7 @@ usage: evaluate.py [-h] [--port PORT] [--query_mode {sentences,unique_terms}]
                    [--qrel_save_path QREL_SAVE_PATH]
                    [--res_save_path RES_SAVE_PATH]
                    [--output_format {tsv,json}]
-                   [--analyzer {arabic,armenian,basque,bengali,brazilian,bulgarian,catalan,cjk,czech,danish,dutch,english,finnish,french,galician,german,greek,hindi,hungarian,indonesian,irish,italian,latvian,lithuanian,norwegian,persian,portuguese,romanian,russian,sorani,spanish,swedish,turkish,thai}]
+                    [--target_langcode {language code}]
                    [--output_file OUTPUT_FILE]
                    ref mt
 ```             
@@ -36,7 +36,7 @@ usage: evaluate.py [-h] [--port PORT] [--query_mode {sentences,unique_terms}]
 `./scripts/server.sh [start | stop]`
 
 ### Run evaluation
-python evaluate.py example/en-de.ref.sgm example/en-de.mt.sgm
+python evaluate.py example/en-de.ref.sgm example/en-de.mt.sgm --target_langcode de --port 9200
 
 We provide a sample bash script for the pipeline in `example/evaluate.sh` and sample output in 
 `example/output.txt`. 
