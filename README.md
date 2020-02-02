@@ -14,8 +14,8 @@ CLIReval is an open-source toolkit that evaluates the quality of MT outputs in t
 ## Usage
 ```
 usage: evaluate.py [-h] 
-				   [--port PORT] 
-				   [--query_mode {sentences,unique_terms}]
+		   [--port PORT] 
+		   [--query_mode {sentences,unique_terms}]
                    [--relv_mode {jenks,percentile,query_in_document}]
                    [--jenks_nb_class JENKS_NB_CLASS]
                    [--n_percentile N_PERCENTILE] 
