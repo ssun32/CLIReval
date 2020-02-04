@@ -6,8 +6,15 @@ from modules import Search, DocParser, TrecEval
 
 if __name__ == '__main__':
     cmdline_parser = argparse.ArgumentParser(description='MT2IR')
-    cmdline_parser.add_argument('ref', help='reference file')
-    cmdline_parser.add_argument('mt', help='translation file')
+
+    cmdline_parser.add_argument('ref_file', help='reference file')
+    cmdline_parser.add_argument('mt_file', help='translation file')
+    cmdline_parser.add_argument('--doc_mapping_file', type=str,
+                                default=None,
+                                help='Path to an optional document boundary file. Used only ref and mt files are raw text files.')
+    cmdline_parser.add_argument('--doc_length', type=int,
+                                default=1,
+                                help='Number of sentences per auto-generated document. This is only used when the input files are raw text files and a doc_mapping_file is not specified')
     cmdline_parser.add_argument('--port', type=int,
                                 default=9200,
                                 help='elasticsearch port (default: 9200)')
@@ -55,7 +62,6 @@ if __name__ == '__main__':
                                 help='output format of IR metrics')
     cmdline_parser.add_argument('--target_langcode', type=str,
                                 default='en')
-
     cmdline_parser.add_argument(
         '--output_file',
         type=str,
@@ -68,12 +74,12 @@ if __name__ == '__main__':
         format='%(asctime)s.%(msecs)03d %(levelname)s: %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S',
     )
-    logging.info('Loading ref document:  %s', (args.ref))
-    ref = DocParser(args.ref)
+    logging.info('Loading ref document:  %s', (args.ref_file))
+    ref = DocParser(args.ref_file, args.doc_mapping_file, args.doc_length)
     ref.log_doc_stats()
 
-    logging.info('Loading mt document: %s', (args.mt))
-    mt = DocParser(args.mt)
+    logging.info('Loading mt document: %s', (args.mt_file))
+    mt = DocParser(args.mt_file, args.doc_mapping_file, args.doc_length)
     mt.log_doc_stats()
 
     query_iterable = ref.get_queries()
