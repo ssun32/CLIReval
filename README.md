@@ -48,7 +48,7 @@ We provide a convenient script that starts an Elasticsearch instance on port 920
 `./scripts/server.sh [start | stop]`
 
 ### Run evaluation
-python evaluate.py example/en-de.ref.sgm example/en-de.mt.sgm
+python evaluate.py examples/en-de.ref.sgm examples/en-de.mt.sgm
 
 We provide a sample bash script for the pipeline in `example/evaluate.sh` and sample output in 
 `example/output.txt`. 
