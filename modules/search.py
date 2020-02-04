@@ -10,7 +10,7 @@ import numpy as np
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
 from tqdm import tqdm
-from .relv_convertor import RelvConvertor
+from .relv_converter import RelvConverter
 from .utils import get_analyzer
 
 
@@ -176,8 +176,8 @@ class Search():
                     (query_id, str(doc_id)), 0.0) for doc_id in doc_ids])
 
                 try:
-                    relv_convertor = RelvConvertor(scores, **kwargs)
-                    relv_labels = relv_convertor.get_relevance_labels()
+                    relv_converter = RelvConverter(scores, **kwargs)
+                    relv_labels = relv_converter.get_relevance_labels()
                 except:
                     print(query_id, query)
                     print(scores)

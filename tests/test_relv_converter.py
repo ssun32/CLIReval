@@ -4,7 +4,7 @@ import jenkspy
 from context import modules
 
 
-class TestRelvConvertor(unittest.TestCase):
+class TestRelvConverter(unittest.TestCase):
 
     def test_normalize(self):
         """test whether scores are normalized to the range [0.0, 1.0]"""
@@ -16,34 +16,34 @@ class TestRelvConvertor(unittest.TestCase):
             0.7043719639139486,
             0.8589174184594032,
             1.0]
-        relv_convertor = modules.RelvConvertor(scores, normalized=False)
-        np.testing.assert_almost_equal(relv_convertor.scores, norm_scores)
+        relv_converter = modules.RelvConverter(scores, normalized=False)
+        np.testing.assert_almost_equal(relv_converter.scores, norm_scores)
         np.testing.assert_almost_equal(
-            relv_convertor.normalize(scores), norm_scores)
+            relv_converter.normalize(scores), norm_scores)
 
         with self.assertRaises(TypeError):
-            relv_convertor.normalize(["1.0"])
+            relv_converter.normalize(["1.0"])
 
     def test_init(self):
         """Tests for the __init__ function"""
         scores = [0.77, 30.788, 71.48, 101.5, 123.77, 144.1]
         with self.assertRaises(ValueError):
-            modules.RelvConvertor(
+            modules.RelvConverter(
                 scores, **{"jenks_nb_class": -1})
         with self.assertRaises(TypeError):
-            modules.RelvConvertor(
+            modules.RelvConverter(
                 scores, **{"jenks_nb_class": "2"})
         with self.assertRaises(ValueError):
-            modules.RelvConvertor(
+            modules.RelvConverter(
                 scores, **{"relv_mode": "percentile", "n_percentile": -1})
         with self.assertRaises(ValueError):
-            modules.RelvConvertor(
+            modules.RelvConverter(
                 scores, **{"relv_mode": "percentile", "n_percentile": 101})
         with self.assertRaises(TypeError):
-            modules.RelvConvertor(
+            modules.RelvConverter(
                 scores, **{"relv_mode": "percentile", "n_percentile": "2"})
         with self.assertRaises(Exception):
-            modules.RelvConvertor(
+            modules.RelvConverter(
                 scores, **{"relv_mode": "UNK"})
 
     def test_get_jenks_intervals(self):
@@ -59,14 +59,14 @@ class TestRelvConvertor(unittest.TestCase):
         scores_bad_value = [0.88, -1000.0, 100001.0]
 
         with self.assertRaises(ValueError):
-            modules.RelvConvertor.get_jenks_intervals(
+            modules.RelvConverter.get_jenks_intervals(
                 scores_bad_value, nb_class=2)
         with self.assertRaises(TypeError):
-            modules.RelvConvertor.get_jenks_intervals(
+            modules.RelvConverter.get_jenks_intervals(
                 scores_bad_type, nb_class=2)
 
         jenks_breaks = jenkspy.jenks_breaks(scores, nb_class=2)
-        jenks_breaks_mod = modules.RelvConvertor.get_jenks_intervals(
+        jenks_breaks_mod = modules.RelvConverter.get_jenks_intervals(
             scores, nb_class=2)
         np.testing.assert_almost_equal(jenks_breaks, jenks_breaks_mod)
 
@@ -75,7 +75,7 @@ class TestRelvConvertor(unittest.TestCase):
         scores = [0.0, 0.1, 0.3, 0.4, 0.6, 0.5, 0.8, 0.7, 0.9, 1.0]
         scores_bad_type = ["0.88", "test"]
         scores_bad_value = [0.88, -1000.0, 100001.0]
-        percentile_intervals = modules.RelvConvertor.get_percentile_intervals
+        percentile_intervals = modules.RelvConverter.get_percentile_intervals
 
         with self.assertRaises(ValueError):
             percentile_intervals(scores_bad_value, n_percentile=20)
@@ -105,7 +105,7 @@ class TestRelvConvertor(unittest.TestCase):
         scores2 = [0.77, 30.788, 71.48, 101.5, 123.77, 144.1]
 
         def test_helper(scores, correct_labels, **kwargs):
-            labels = modules.RelvConvertor(
+            labels = modules.RelvConverter(
                 scores, **kwargs).get_relevance_labels()
             self.assertEqual(labels, correct_labels)
 

@@ -7,8 +7,8 @@ import jenkspy
 import numpy as np
 
 
-class RelvConvertor():
-    """RelvConvertor object converts raw scores (from ElasticSearch) into discrete classes
+class RelvConverter():
+    """RelvConverter object converts raw scores (from ElasticSearch) into discrete classes
 
     Attributes:
         relv_mode (str):
