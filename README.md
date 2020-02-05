@@ -62,7 +62,7 @@ Evaluating with artificial document boundary:
 We also provide a sample bash script `example/evaluate.sh` which runs the entire pipeline: 1) start an Elasticsearch instance, 2) run evaluation 3) shut down Elasticsearch.
 A sample output in `example/output.txt`. 
 
-Please refer to [trec_eval documentation](https://w-nlpir.nist.gov/projects/trecvid/trecvid.tools/trec_eval_video/A.README) for an explanation of the output.
+Please refer to [trec_eval documentation](https://w-nlpir.nist.gov/projects/trecvid/trecvid.tools/trec_eval_video/A.README) for explanation of the output.
 
 ## Installation
 * Install python dependencies  `pip install -r requirements.txt`
