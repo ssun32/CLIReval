@@ -67,3 +67,9 @@ Please refer to [trec_eval documentation](https://w-nlpir.nist.gov/projects/trec
 ## Installation
 * Install python dependencies  `pip install -r requirements.txt`
 * Install external tools (elasticsearch and trec_eval) `bash scripts/install_external_tools.sh`
+
+## References
+
+[1] Shuo Sun, Suzanna Sia, Kevin Duh,
+    [*CLIReval: Evaluating Machine Translation as a Cross-Lingual Information Retrieval Task*](https://www.aclweb.org/anthology/2020.acl-demos.18/),
+    Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics: System Demonstrations, 2020
