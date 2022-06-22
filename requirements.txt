@@ -2,7 +2,7 @@ beautifulsoup4==4.8.1
 bs4==0.0.1
 elasticsearch==7.1.0
 jenkspy==0.1.5
-numpy==1.18.0
+numpy==1.22.0
 soupsieve==1.9.5
 tqdm==4.41.0
 urllib3==1.25.7
